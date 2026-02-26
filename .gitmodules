@@ -1,0 +1,9 @@
+[submodule "tinydb"]
+	path = tinydb
+	url = https://github.com/matheusvir/tinydb
+[submodule "python-dotenv"]
+	path = python-dotenv
+	url = https://github.com/matheusvir/python-dotenv
+[submodule "whoosh-reloaded"]
+	path = whoosh-reloaded
+	url = https://github.com/matheusvir/whoosh-reloaded
