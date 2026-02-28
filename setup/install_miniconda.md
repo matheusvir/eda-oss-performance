@@ -66,7 +66,7 @@ conda create -n nome_do_ambiente
 
 ---
 
-## ▶️ Ativar o ambiente virtual
+## Ativar o ambiente virtual
 
 Após criar o ambiente virtual, você precisa ativá-lo para poder usá-lo:
 
@@ -76,7 +76,7 @@ conda activate nome_do_ambiente
 
 Pronto! Agora você está dentro do ambiente virtual e pode instalar as dependências do seu projeto sem afetar o resto do sistema.
 
-> ⚠️ **Usando o VSCode?**
+> **Você está usando o VSCode?**
 > É provável que ele não reconheça automaticamente o ambiente virtual que você criou. Para resolver:
 >
 > 1. Pressione <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>
