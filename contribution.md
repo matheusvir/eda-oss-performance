@@ -70,12 +70,12 @@ git push origin otimizacao/nome-da-otimizacao
 
 # 5. Abrir Pull Request no GitHub
 # origem:  matheusvir/tinydb → otimizacao/nome-da-otimizacao
-# destino: msiemens/tinydb  → master
+# destino: matheusvir/tinydb → main  (branch principal do fork)
 ```
 
-Após o push, abrir o PR no GitHub apontando para o repositório **original** (não o fork).
+O PR é aberto **dentro do fork** para revisão interna da equipe. O repositório original só será atualizado ao final do projeto, após todas as validações.
 
-**Após o PR ser aprovado**, atualizar o ponteiro do submódulo no repositório principal:
+**Após o PR ser aprovado internamente**, atualizar o ponteiro do submódulo no repositório principal:
 
 ```bash
 # na raiz do eda-oss-performance
@@ -163,7 +163,7 @@ O script de experimento deve salvar os resultados em `/results`, que serão pers
 }
 ```
 
-Se a melhora for comprovada estatisticamente, o PR no fork pode ser submetido ao repositório oficial do projeto.
+Se a melhora for comprovada estatisticamente, a otimização está pronta. O envio ao repositório oficial ocorre na etapa final do projeto, descrita abaixo.
 
 ---
 
@@ -197,11 +197,29 @@ git push origin util/nome-da-tarefa
 
 ---
 
+## 5. Envio ao repositório oficial
+
+Esta etapa ocorre **somente ao fim do projeto**, após todas as otimizações terem sido aprovadas internamente (Validação) e comprovadas em termos de performance (Performance).
+
+```bash
+# Dentro do submódulo
+cd tinydb
+
+# A partir da branch principal do fork, abrir PR para o repositório original
+# origem:  matheusvir/tinydb → main
+# destino: msiemens/tinydb  → master
+```
+
+O PR é aberto no GitHub apontando do fork para o repositório **original**.
+
+---
+
 ## Resumo
 
 | Tipo | Onde trabalha | Branch | PR para |
 |---|---|---|---|
-| Implementação | Dentro do submódulo | `otimizacao/nome` no fork | Repositório original |
+| Implementação | Dentro do submódulo | `otimizacao/nome` no fork | Branch `main` do fork (revisão interna) |
 | Validação | Revisão no GitHub | — | Aprovação no fork |
 | Performance | `experiments/` + Docker | `main` do repositório principal | — |
 | Utilitários | Raiz do repositório principal | `util/nome` | `main` do repositório principal |
+| Envio ao upstream | Dentro do submódulo | `main` do fork | Repositório original (fim do projeto) |
