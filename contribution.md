@@ -69,7 +69,7 @@ git commit -m "descrição objetiva da otimização"
 git push origin otimizacao/nome-da-otimizacao
 
 # 5. Abrir Pull Request no GitHub
-# origem:  matheusvir/tinydb → otimizacao/nome-da-otimizacao
+# origem:  matheusvir/tinydb → optimization/nome-da-otimizacao(use inglês para o nome da otimização)
 # destino: matheusvir/tinydb → main  (branch principal do fork)
 ```
 
@@ -176,7 +176,8 @@ Atividades de suporte ao projeto: ambiente Docker, relatórios, gráficos, READM
 - Criar ou atualizar o `Dockerfile` em `setup/<projeto>/`
 - Escrever ou atualizar o `README.md`
 - Gerar gráficos comparativos a partir dos JSONs em `results/`
-- Redigir relatórios acadêmicos
+- Redigir o relatório final do projeto
+- Realizar workshop de Git/GitHub para a equipe
 
 **Fluxo:**
 
