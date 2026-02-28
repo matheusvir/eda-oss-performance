@@ -16,15 +16,15 @@
 
 ---
 
-## 📥 Baixar o Miniconda
+## Baixar o Miniconda
 
-### 🪟 Windows
+### Windows
 
-> **Se você usa WSL, siga o tutorial para Linux.**
+> **Se você usa WSL, siga direto para o tutorial para Linux.**
 
 👉 [Veja este vídeo](https://youtu.be/AgnAs0nPEVg)
 
-### 🐧 Linux
+### Linux
 
 Execute os seguintes comandos no seu terminal e siga os passos de instalação — você terá apenas que dar <kbd>Enter</kbd> algumas vezes e aceitar os termos de uso, nada demais.
 
@@ -45,7 +45,7 @@ bash Miniconda3-latest-Linux-x86_64.sh
 
 ---
 
-## 📦 Criar um ambiente virtual
+## Criar um ambiente virtual
 
 Agora que você tem o Miniconda instalado, pode criar **ambientes virtuais** para isolar os projetos.
 
