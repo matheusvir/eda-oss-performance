@@ -4,6 +4,66 @@ Este documento descreve os fluxos de trabalho do projeto. Cada atividade pertenc
 
 ---
 
+## Padrões gerais
+
+### Idioma
+
+Todos os commits, nomes de branch e comentários de código devem ser escritos em **inglês**.
+
+### Convenção de commits
+
+Os commits devem seguir o padrão [Conventional Commits](https://www.conventionalcommits.org):
+
+```
+<tipo>(<escopo>): <descrição curta>
+```
+
+**Tipos disponíveis:**
+
+| Tipo | Quando usar |
+|---|---|
+| `feat` | Adição de nova funcionalidade ou otimização |
+| `fix` | Correção de bug ou comportamento incorreto |
+| `refactor` | Refatoração de código sem mudança de comportamento |
+| `perf` | Mudança com foco exclusivo em performance |
+| `test` | Adição ou correção de testes |
+| `docs` | Alterações em documentação |
+| `chore` | Tarefas de manutenção (dependências, configurações) |
+
+**Exemplos:**
+
+```bash
+feat(tinydb): implement b-tree index for document lookup
+fix(tinydb): correct bloom filter false positive rate
+perf(python-dotenv): replace dict merge with chainmap
+test(whoosh): add stress test for negative lookups
+docs: update contribution workflow
+```
+
+O **escopo** é opcional mas recomendado — use o nome do projeto (`tinydb`, `python-dotenv`, `whoosh`).
+
+### Nomenclatura de branches
+
+Use sempre **inglês** e o prefixo adequado ao tipo de trabalho:
+
+| Prefixo | Uso |
+|---|---|
+| `optimization/` | Implementação de otimização nos forks |
+| `fix/` | Correção de bug nos forks |
+| `util/` | Tarefas utilitárias no repositório principal |
+
+**Exemplos:**
+
+```
+optimization/bloom-filter-negative-lookup
+optimization/btree-document-index
+fix/chainmap-interpolation-edge-case
+util/docker-setup
+util/final-report
+```
+
+---
+
 ## Estrutura do repositório
 
 ```
@@ -58,18 +118,18 @@ git submodule update --init --recursive
 # 1. Entrar no submódulo do projeto
 cd tinydb  # ou python-dotenv / whoosh-reloaded
 
-# 2. Criar uma branch descritiva para a otimização
-git checkout -b otimizacao/nome-da-otimizacao
+# 2. Criar uma branch descritiva para a otimização (em inglês)
+git checkout -b optimization/btree-document-index
 
 # 3. Realizar as alterações no código
 
-# 4. Commitar e pushear para o fork
+# 4. Commitar seguindo a convenção de commits (em inglês)
 git add .
-git commit -m "descrição objetiva da otimização"
-git push origin otimizacao/nome-da-otimizacao
+git commit -m "feat(tinydb): implement b-tree index for document lookup"
+git push origin optimization/btree-document-index
 
 # 5. Abrir Pull Request no GitHub
-# origem:  matheusvir/tinydb → optimization/nome-da-otimizacao(use inglês para o nome da otimização)
+# origem:  matheusvir/tinydb → optimization/btree-document-index
 # destino: matheusvir/tinydb → main  (branch principal do fork)
 ```
 
@@ -81,7 +141,7 @@ O PR é aberto **dentro do fork** para revisão interna da equipe. O repositóri
 # na raiz do eda-oss-performance
 cd ..
 git add tinydb
-git commit -m "update tinydb submodule"
+git commit -m "chore: update tinydb submodule"
 git push origin main
 ```
 
@@ -107,7 +167,7 @@ O membro responsável revisa o código de uma otimização e aprova ou solicita 
 ```bash
 cd tinydb
 git fetch origin
-git checkout otimizacao/nome-da-otimizacao
+git checkout optimization/btree-document-index
 
 # rodar os testes do projeto
 pip install -e .
@@ -185,13 +245,13 @@ Atividades de suporte ao projeto: ambiente Docker, relatórios, gráficos, READM
 # Na raiz do repositório principal (não dentro de um submódulo)
 git checkout main
 
-# Criar uma branch descritiva
-git checkout -b util/nome-da-tarefa
+# Criar uma branch descritiva (em inglês)
+git checkout -b util/docker-setup
 
 # Realizar as alterações
 git add .
-git commit -m "descrição da tarefa"
-git push origin util/nome-da-tarefa
+git commit -m "chore: add docker setup for all projects"
+git push origin util/docker-setup
 
 # Abrir PR para a main no repositório eda-oss-performance
 ```
@@ -219,7 +279,7 @@ O PR é aberto no GitHub apontando do fork para o repositório **original**.
 
 | Tipo | Onde trabalha | Branch | PR para |
 |---|---|---|---|
-| Implementação | Dentro do submódulo | `otimizacao/nome` no fork | Branch `main` do fork (revisão interna) |
+| Implementação | Dentro do submódulo | `optimization/name` no fork | Branch `main` do fork (revisão interna) |
 | Validação | Revisão no GitHub | — | Aprovação no fork |
 | Performance | `experiments/` + Docker | `main` do repositório principal | — |
 | Utilitários | Raiz do repositório principal | `util/nome` | `main` do repositório principal |
