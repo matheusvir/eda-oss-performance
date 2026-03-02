@@ -64,6 +64,64 @@ util/final-report
 
 ---
 
+### Padrão de Pull Request
+
+Todo PR aberto (tanto nos forks quanto no repositório principal) deve seguir o formato abaixo no título e na descrição.
+
+**Título:**
+
+```
+<tipo>(<escopo>): <descrição curta>
+```
+
+Seguindo a mesma convenção de commits. Exemplos:
+
+```
+feat(tinydb): implement b-tree index for document lookup
+perf(python-dotenv): replace dict merge with chainmap
+chore: add docker setup for all projects
+```
+
+**Descrição (corpo do PR):**
+
+```markdown
+## O que foi feito
+Descrição objetiva da mudança implementada e a motivação por trás dela.
+
+## Como testar
+Passos para reproduzir e verificar o comportamento localmente.
+
+## Issue relacionada
+Closes #<número>
+```
+
+---
+
+### Nomenclatura de arquivos
+
+Use sempre **inglês** e o prefixo adequado ao tipo de conteúdo:
+
+| Prefixo | Tipo | Localização | Exemplo |
+|---|---|---|---|
+| `baseline_` | Script de medição antes da otimização | `experiments/<projeto>/` | `baseline_tinydb_btree.py` |
+| `experiment_` | Script de medição após a otimização | `experiments/<projeto>/` | `experiment_tinydb_btree.py` |
+| `result_` | Resultado JSON de um experimento | `results/<projeto>/` | `result_tinydb_btree.json` |
+| `Dockerfile` | Ambiente isolado do projeto | `setup/<projeto>/` | `Dockerfile` |
+
+O `<otimizacao>` no nome do arquivo deve corresponder à branch de implementação, sem o prefixo `optimization/`. Exemplos:
+
+```
+experiments/tinydb/baseline_tinydb_btree.py
+experiments/tinydb/experiment_tinydb_btree.py
+results/tinydb/result_tinydb_btree.json
+
+experiments/python-dotenv/baseline_python-dotenv_chainmap.py
+experiments/python-dotenv/experiment_python-dotenv_chainmap.py
+results/python-dotenv/result_python-dotenv_chainmap.json
+```
+
+---
+
 ## Estrutura do repositório
 
 ```
@@ -149,7 +207,7 @@ git push origin main
 
 ### 2. Validação
 
-O membro responsável revisa o código de uma otimização e aprova ou solicita ajustes no PR aberto dentro do submódulo.
+O membro responsável revisa o código de uma otimização, executa os testes e reporta o resultado no canal de comunicação oficial da equipe.
 
 **Critérios de aprovação:**
 
@@ -162,7 +220,7 @@ O membro responsável revisa o código de uma otimização e aprova ou solicita 
 
 1. Acessar o PR aberto no fork correspondente (ex: `github.com/matheusvir/tinydb/pulls`)
 2. Revisar as alterações na aba **Files changed**
-3. Executar localmente se necessário:
+3. Executar localmente:
 
 ```bash
 cd tinydb
@@ -174,7 +232,10 @@ pip install -e .
 pytest
 ```
 
-4. Aprovar o PR ou solicitar mudanças com comentários objetivos
+4. Reportar o resultado no canal de comunicação oficial da equipe com:
+   - Status dos testes (passou / falhou)
+   - Observações sobre o código revisado
+   - Aprovação ou lista de ajustes necessários
 
 ---
 
@@ -280,7 +341,7 @@ O PR é aberto no GitHub apontando do fork para o repositório **original**.
 | Tipo | Onde trabalha | Branch | PR para |
 |---|---|---|---|
 | Implementação | Dentro do submódulo | `optimization/name` no fork | Branch `main` do fork (revisão interna) |
-| Validação | Revisão no GitHub | — | Aprovação no fork |
+| Validação | Revisão local + report no canal da equipe | — | — |
 | Performance | `experiments/` + Docker | `main` do repositório principal | — |
 | Utilitários | Raiz do repositório principal | `util/nome` | `main` do repositório principal |
 | Envio ao upstream | Dentro do submódulo | `main` do fork | Repositório original (fim do projeto) |
