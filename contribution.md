@@ -248,15 +248,23 @@ O membro responsável mede o impacto real da otimização utilizando um ambiente
 **Fluxo:**
 
 ```bash
-# 1. Subir o ambiente Docker do projeto
-cd setup/tinydb
-docker build -t eda-tinydb .
-docker run --rm -v $(pwd)/../../experiments/tinydb:/experiments \
-                -v $(pwd)/../../results/tinydb:/results \
-                eda-tinydb
+# Na raiz do repositório principal
+git checkout main
+git checkout -b perf/<projeto>-<otimizacao>
+
+# Criar os scripts de benchmark em experiments/<projeto>/
+# e executar via script de run dentro do Docker
+bash experiments/<projeto>/run_<otimizacao>.sh
+
+# Commitar scripts e resultado JSON
+git add experiments/<projeto>/ results/<projeto>/
+git commit -m "perf(<projeto>): add benchmark scripts for <otimizacao>"
+git push origin perf/<projeto>-<otimizacao>
+
+# Abrir PR para a main no repositório eda-oss-performance
 ```
 
-O script de experimento deve salvar os resultados em `/results`, que serão persistidos em `results/tinydb/` no repositório.
+> Os scripts de benchmark só devem ser abertos em PR após a otimização correspondente estar implementada e o experimento ter rodado com pelo menos 30 execuções.
 
 **Critérios de validação estatística:**
 
@@ -264,7 +272,7 @@ O script de experimento deve salvar os resultados em `/results`, que serão pers
 - Calcular **média** e **desvio padrão** antes e depois da otimização
 - A melhora é considerada comprovada quando a média pós-otimização supera a média anterior por uma margem maior que um desvio padrão
 
-**Formato dos resultados** (`results/<projeto>/nome-do-experimento.json`):
+**Formato dos resultados** (`results/<projeto>/result_<projeto>_<otimizacao>.json`):
 
 ```json
 {
@@ -342,6 +350,6 @@ O PR é aberto no GitHub apontando do fork para o repositório **original**.
 |---|---|---|---|
 | Implementação | Dentro do submódulo | `optimization/name` no fork | Branch `main` do fork (revisão interna) |
 | Validação | Revisão local + report no canal da equipe | — | — |
-| Performance | `experiments/` + Docker | `main` do repositório principal | — |
+| Performance | `experiments/` + Docker | `perf/<projeto>-<otimizacao>` | `main` do repositório principal (após experimento completo) |
 | Utilitários | Raiz do repositório principal | `util/nome` | `main` do repositório principal |
 | Envio ao upstream | Dentro do submódulo | `main` do fork | Repositório original (fim do projeto) |
