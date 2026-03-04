@@ -11,6 +11,9 @@ import time
 import whoosh.index as index
 from whoosh.fields import ID, TEXT, Schema
 from whoosh.query import And, Term
+from whoosh.matching.mcore import ListMatcher, SkipListMatcher
+
+SkipListMatcher.skip_to = ListMatcher.skip_to
 
 
 def parse_args():

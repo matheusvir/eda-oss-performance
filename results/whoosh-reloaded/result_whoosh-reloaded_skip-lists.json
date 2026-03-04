@@ -3,16 +3,16 @@
   "project": "whoosh-reloaded",
   "variant": "optimized",
   "baseline": {
-    "mean_ms": 9379.0924,
-    "std_ms": 1452.5428,
+    "mean_ms": 9057.8618,
+    "std_ms": 887.1988,
     "runs": 30
   },
   "optimized": {
-    "mean_ms": 8030.9395,
-    "std_ms": 898.9721,
+    "mean_ms": 8249.2731,
+    "std_ms": 341.5013,
     "runs": 30
   },
-  "improvement_pct": 14.37,
+  "improvement_pct": 8.93,
   "improvement_confirmed": false,
   "config": {
     "docs": 500000,
