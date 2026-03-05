@@ -193,14 +193,66 @@ git push origin optimization/btree-document-index
 
 O PR é aberto **dentro do fork** para revisão interna da equipe. O repositório original só será atualizado ao final do projeto, após todas as validações.
 
-**Após o PR ser aprovado internamente**, atualizar o ponteiro do submódulo no repositório principal:
+> **Nota:** A atualização do ponteiro do submódulo no repositório principal é de **responsabilidade exclusiva do owner do projeto** (matheusvir) após o merge do PR.
+
+---
+
+### Isolamento de implementações para testes de performance
+
+**Importante:** Quando um projeto possui múltiplas otimizações em desenvolvimento simultâneo, é essencial **isolar cada implementação** antes de executar os testes de performance. Isso garante que os resultados reflitam exclusivamente o impacto da otimização sendo medida, sem interferência de outras mudanças não relacionadas.
+
+**Cenário típico:**
+
+Imagine que o projeto `tinydb` possui três otimizações em andamento:
+
+- `optimization/btree-document-index` (branch A)
+- `optimization/bloom-filter-negative-lookup` (branch B)
+- `optimization/cache-layer` (branch C)
+
+Ao testar o desempenho da otimização B (bloom filter), é necessário garantir que o código testado contém **somente** a implementação do bloom filter, e não inclui as mudanças das branches A ou C.
+
+**Como isolar uma implementação:**
 
 ```bash
-# na raiz do eda-oss-performance
+# 1. Entrar no submódulo do projeto
+cd tinydb
+
+# 2. Garantir que você está partindo da branch principal limpa
+git checkout main
+git pull origin main
+
+# 3. Fazer checkout da branch da otimização que você deseja testar
+git checkout optimization/bloom-filter-negative-lookup
+
+# 4. Verificar que não há outras mudanças mescladas indevidamente
+git log --oneline main..HEAD
+# Deve aparecer apenas os commits da otimização sendo testada
+
+# 5. Executar os testes de performance SOMENTE nesta branch isolada
 cd ..
-git add tinydb
-git commit -m "chore: update tinydb submodule"
-git push origin main
+bash experiments/tinydb/run_bloom-filter-negative-lookup.sh
+```
+
+**O que evitar:**
+
+- **Não** mescle múltiplas branches de otimização antes de testar
+- **Não** execute testes a partir da `main` se ela já contém outras otimizações mergeadas
+- **Não** assuma que o código está isolado sem verificar o histórico de commits
+
+**Estratégia recomendada:**
+
+Caso a branch `main` do fork já contenha outras otimizações mergeadas e você precise isolar apenas uma delas para re-testar:
+
+```bash
+# Criar uma branch temporária a partir do commit anterior às otimizações
+git checkout main
+git log --oneline  # identificar o último commit antes das otimizações
+
+# Criar branch de teste isolada
+git checkout -b temp-isolated-test <commit-hash>
+git cherry-pick <commit-da-otimizacao-desejada>
+
+# Agora você tem uma branch com APENAS a otimização isolada
 ```
 
 ---
@@ -242,6 +294,8 @@ pytest
 ### 3. Performance
 
 O membro responsável mede o impacto real da otimização utilizando um ambiente Docker isolado, garantindo que os resultados tenham validade estatística.
+
+> **Lembre-se:** Sempre execute os testes de performance em uma branch isolada contendo **apenas** a otimização sendo medida. Consulte a seção "Isolamento de implementações para testes de performance" acima.
 
 **Ambiente:** Docker (definido em `setup/<projeto>/`). Todos os experimentos devem ser executados dentro deste ambiente para garantir reprodutibilidade.
 
