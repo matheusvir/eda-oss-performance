@@ -1,0 +1,24 @@
+{
+  "experiment": "skip-lists-boolean-intersection",
+  "project": "whoosh-reloaded",
+  "variant": "optimized",
+  "baseline": {
+    "mean_ms": 9057.8618,
+    "std_ms": 887.1988,
+    "runs": 30
+  },
+  "optimized": {
+    "mean_ms": 8249.2731,
+    "std_ms": 341.5013,
+    "runs": 30
+  },
+  "improvement_pct": 8.93,
+  "improvement_confirmed": false,
+  "config": {
+    "docs": 500000,
+    "high_freq_count": 100000,
+    "low_freq_count": 1000,
+    "query_pairs_per_run": 100,
+    "seed": 42
+  }
+}
