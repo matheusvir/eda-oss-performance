@@ -10,4 +10,10 @@ RUN conda install python=3.11 -y
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-CMD ["bash"]
+COPY python-dotenv ./python-dotenv
+RUN pip install --no-cache-dir -e ./python-dotenv/
+COPY experiments/python-dotenv ./experiments
+
+RUN mkdir ./results
+RUN chmod +x /workspace/experiments/chainmap_load_test/run.sh
+CMD ["bash", "/workspace/experiments/chainmap_load_test/run.sh"]
