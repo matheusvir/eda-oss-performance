@@ -1,0 +1,42 @@
+{
+  "experiment": "bloom-filter",
+  "project": "tinydb",
+  "methodology": {
+    "total_runs": 50,
+    "discarded_warmup": 10,
+    "discarded_cooldown": 10,
+    "effective_runs": 30,
+    "lookups_per_run": 100,
+    "storage": "JSONStorage",
+    "operation": "get(doc_id=nonexistent) + contains(doc_id=nonexistent)"
+  },
+  "scales": [
+    {
+      "num_docs": 1000,
+      "baseline_mean_ms": 54.7197,
+      "baseline_std_ms": 1.8686,
+      "optimized_mean_ms": 1.8111,
+      "optimized_std_ms": 0.1635,
+      "diff_abs_ms": 52.9086,
+      "improvement_pct": 96.69
+    },
+    {
+      "num_docs": 10000,
+      "baseline_mean_ms": 787.0314,
+      "baseline_std_ms": 18.8974,
+      "optimized_mean_ms": 0.6225,
+      "optimized_std_ms": 0.0751,
+      "diff_abs_ms": 786.4089,
+      "improvement_pct": 99.92
+    },
+    {
+      "num_docs": 50000,
+      "baseline_mean_ms": 12559.8821,
+      "baseline_std_ms": 1349.9473,
+      "optimized_mean_ms": 1.2926,
+      "optimized_std_ms": 0.433,
+      "diff_abs_ms": 12558.5895,
+      "improvement_pct": 99.99
+    }
+  ]
+}

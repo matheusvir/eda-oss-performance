@@ -1,13 +1,6 @@
-FROM continuumio/miniconda3
+FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y git \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-WORKDIR /workspace
+RUN pip install --no-cache-dir tinydb
 
-RUN conda install python=3.11 -y
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-CMD ["bash"]
