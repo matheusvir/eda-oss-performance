@@ -1,0 +1,38 @@
+{
+  "experiment": "ngrams",
+  "project": "whoosh-reloaded",
+  "variant": "baseline",
+  "baseline": {
+    "mean_ms": 19421.2403,
+    "std_ms": 866.8902,
+    "runs": 30
+  },
+  "optimized": {
+    "mean_ms": null,
+    "std_ms": null,
+    "runs": null
+  },
+  "improvement_pct": null,
+  "details": {
+    "indexing": {
+      "mean_ms": 19114.0277,
+      "std_ms": 867.335
+    },
+    "searching": {
+      "mean_ms": 238.5688,
+      "std_ms": 9.2889
+    },
+    "tokenizer": {
+      "mean_ms": 68.6438,
+      "std_ms": 6.0351
+    }
+  },
+  "config": {
+    "docs": 2000,
+    "doc_length": 200,
+    "queries": 100,
+    "min_ngram": 2,
+    "max_ngram": 4,
+    "seed": 42
+  }
+}
