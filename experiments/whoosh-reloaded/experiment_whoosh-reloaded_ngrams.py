@@ -1,28 +1,64 @@
+"""Experiment benchmark for wildcard lookup with ngram acceleration.
+
+This benchmark measures wildcard queries that do not have a literal prefix
+(e.g. ``*ados`` and ``*ritmo*``). In optimized behavior, these queries use
+an ngram candidate index instead of a full linear scan over lexicon terms.
+
+Methodology:
+  - 50 runs total
+  - Discard first 10 (warmup) and last 10 (cooldown)
+  - Use middle 30 runs for statistics
+  - GC disabled during measurement
+"""
+
 import argparse
+import gc
 import json
 import os
-import random
 import shutil
 import statistics
-import string
 import sys
 import tempfile
 import time
+from itertools import product
+from typing import Dict, List
 
 import whoosh.index as index
-from whoosh.fields import ID, NGRAM, NGRAMWORDS, Schema
+from whoosh.fields import ID, TEXT, Schema
+from whoosh.query import Wildcard
+
+TOTAL_RUNS = 50
+DISCARD = 10
+DEFAULT_PATTERNS = "*ados,*ritmo*,*logia,*graf*"
+
+PREFIXES = (
+    "bio", "neuro", "hidro", "termo", "eletro", "micro", "macro", "crono",
+    "geo", "aero", "foto", "quimio", "orto", "cardio", "hemo", "cito",
+    "nano", "tele", "socio", "psico", "radio", "econo", "mecano", "astro",
+)
+MIDDLES = (
+    "ritmo", "dado", "modelo", "sinal", "sistema", "process", "algoritmo",
+    "metodo", "estrutura", "teoria", "analise", "dinamica", "sintese",
+    "controle", "mecanismo", "graf", "vetor", "filtro", "indice", "codigo",
+)
+SUFFIXES = (
+    "ados", "ico", "ica", "ismo", "ista", "logia", "metria", "grafia",
+    "vel", "tivo", "izacao", "ante", "ente", "ar", "ario", "al",
+)
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Experiment: N-gram tokenization and indexing performance (optimized)"
+        description=(
+            "Experiment: wildcard lookup performance with ngram candidate index"
+        )
     )
-    parser.add_argument("--docs", type=int, default=10_000)
-    parser.add_argument("--doc-length", type=int, default=500)
-    parser.add_argument("--queries", type=int, default=200)
-    parser.add_argument("--min-ngram", type=int, default=2)
-    parser.add_argument("--max-ngram", type=int, default=4)
-    parser.add_argument("--runs", type=int, default=30)
+    parser.add_argument("--vocab-size", type=int, default=7_000)
+    parser.add_argument("--docs", type=int, default=200_000)
+    parser.add_argument("--wildcards-per-run", type=int, default=400)
+    parser.add_argument("--patterns", type=str, default=DEFAULT_PATTERNS)
+    parser.add_argument("--total-runs", type=int, default=TOTAL_RUNS)
+    parser.add_argument("--discard", type=int, default=DISCARD)
     parser.add_argument(
         "--output",
         type=str,
@@ -33,148 +69,113 @@ def parse_args():
     return parser.parse_args()
 
 
-_WORDS = [
-    "performance", "algorithm", "structure", "database", "indexing",
-    "searching", "optimize", "analysis", "document", "filtering",
-    "benchmark", "ngram", "tokenizer", "encoding", "characters",
-    "frequency", "matching", "position", "storage", "efficient",
-    "parallel", "computing", "function", "iterator", "generator",
-]
+def build_vocabulary(vocab_size: int) -> List[str]:
+    terms: List[str] = []
+    for pref, mid, suff in product(PREFIXES, MIDDLES, SUFFIXES):
+        terms.append(f"{pref}{mid}{suff}")
+        if len(terms) == vocab_size:
+            return terms
 
-
-def generate_text(rng, length):
-    words = []
-    current_len = 0
-    while current_len < length:
-        word = rng.choice(_WORDS)
-        words.append(word)
-        current_len += len(word) + 1
-    return " ".join(words)[:length]
-
-
-def generate_query(rng, min_ngram, max_ngram):
-    word = rng.choice(_WORDS)
-    size = rng.randint(min_ngram, min(max_ngram, len(word)))
-    start = rng.randint(0, len(word) - size)
-    return word[start:start + size]
-
-
-def build_index(index_dir, args, rng):
-    schema = Schema(
-        id=ID(stored=True),
-        ngram_content=NGRAM(
-            minsize=args.min_ngram,
-            maxsize=args.max_ngram,
-            stored=False,
-        ),
-        ngramword_content=NGRAMWORDS(
-            minsize=args.min_ngram,
-            maxsize=args.max_ngram,
-            stored=False,
-        ),
+    raise ValueError(
+        "vocab_size too large for generated cartesian vocabulary; "
+        f"max supported is {len(PREFIXES) * len(MIDDLES) * len(SUFFIXES)}"
     )
+
+
+def parse_patterns(patterns: str) -> List[str]:
+    parsed = [p.strip() for p in patterns.split(",") if p.strip()]
+    if not parsed:
+        raise ValueError("patterns cannot be empty")
+    return parsed
+
+
+def build_index(index_dir: str, docs: int, vocab: List[str]) -> None:
+    schema = Schema(id=ID(stored=True), content=TEXT(stored=False))
     ix = index.create_in(index_dir, schema)
     writer = ix.writer()
 
-    for i in range(args.docs):
-        text = generate_text(rng, args.doc_length)
-        writer.add_document(
-            id=str(i),
-            ngram_content=text,
-            ngramword_content=text,
-        )
+    vocab_len = len(vocab)
+    for i in range(docs):
+        writer.add_document(id=str(i), content=vocab[i % vocab_len])
 
     writer.commit()
-    return ix
 
 
-def run_search_benchmark(ix, queries, field):
-    from whoosh.query import Term
+def build_run_patterns(patterns: List[str], wildcards_per_run: int) -> List[str]:
+    run_patterns: List[str] = []
+    while len(run_patterns) < wildcards_per_run:
+        run_patterns.extend(patterns)
+    return run_patterns[:wildcards_per_run]
 
+
+def count_matches(ix: index.Index, patterns: List[str]) -> Dict[str, int]:
     searcher = ix.searcher()
+    counts: Dict[str, int] = {}
+    for pattern in patterns:
+        query = Wildcard("content", pattern)
+        counts[pattern] = len(searcher.search(query, limit=None))
+    searcher.close()
+    return counts
 
+
+def run_benchmark(ix: index.Index, run_patterns: List[str]) -> float:
+    searcher = ix.searcher()
+    queries = [Wildcard("content", p) for p in run_patterns]
+
+    gc.collect()
+    gc.disable()
     start = time.perf_counter()
-    for q_text in queries:
-        q = Term(field, q_text)
-        _ = len(searcher.search(q, limit=10))
+    for query in queries:
+        _ = searcher.search(query, limit=10)
     end = time.perf_counter()
+    gc.enable()
 
     searcher.close()
     return (end - start) * 1_000.0
 
 
-def run_indexing_benchmark(args, rng):
-    index_dir = tempfile.mkdtemp(prefix="whoosh_ngram_idx_bench_")
-    try:
-        start = time.perf_counter()
-        ix = build_index(index_dir, args, rng)
-        end = time.perf_counter()
-        ix.close()
-    finally:
-        shutil.rmtree(index_dir, ignore_errors=True)
-    return (end - start) * 1_000.0
-
-
-def main():
+def main() -> int:
     args = parse_args()
-    rng = random.Random(args.seed)
 
-    texts = [generate_text(rng, args.doc_length) for _ in range(args.docs)]
-    queries = [generate_query(rng, args.min_ngram, args.max_ngram) for _ in range(args.queries)]
+    if args.discard * 2 >= args.total_runs:
+        raise ValueError("discard must be less than total_runs / 2")
 
-    # --- Benchmark 1: Indexing ---
-    # Warm-up
-    run_indexing_benchmark(args, random.Random(args.seed))
+    patterns = parse_patterns(args.patterns)
+    vocab = build_vocabulary(args.vocab_size)
+    run_patterns = build_run_patterns(patterns, args.wildcards_per_run)
 
-    indexing_timings = []
-    for _ in range(args.runs):
-        ms = run_indexing_benchmark(args, random.Random(args.seed))
-        indexing_timings.append(ms)
+    keep_from = args.discard
+    keep_to = args.total_runs - args.discard
 
-    # --- Benchmark 2: Searching ---
-    index_dir = tempfile.mkdtemp(prefix="whoosh_ngram_search_bench_")
+    index_dir = tempfile.mkdtemp(prefix="whoosh_ngrams_experiment_")
     try:
-        ix = build_index(index_dir, args, random.Random(args.seed))
+        print(f"Building index with docs={args.docs}, vocab={args.vocab_size}...")
+        build_index(index_dir, args.docs, vocab)
+        ix = index.open_dir(index_dir)
 
-        # Warm-up
-        run_search_benchmark(ix, queries, "ngram_content")
+        matches = count_matches(ix, patterns)
+        print(f"Wildcard patterns: {patterns}")
+        print(f"Matches per pattern: {matches}")
+        print(
+            f"Running {args.total_runs} iterations "
+            f"({args.discard} warmup, {args.discard} cooldown, {keep_to - keep_from} measured)..."
+        )
 
-        search_timings = []
-        for _ in range(args.runs):
-            ms = run_search_benchmark(ix, queries, "ngram_content")
-            search_timings.append(ms)
+        all_timings: List[float] = []
+        for i in range(args.total_runs):
+            elapsed = run_benchmark(ix, run_patterns)
+            all_timings.append(elapsed)
+            print(f"  run {i + 1}/{args.total_runs}: {elapsed:.2f} ms")
 
         ix.close()
     finally:
         shutil.rmtree(index_dir, ignore_errors=True)
 
-    # --- Benchmark 3: NgramTokenizer throughput ---
-    from whoosh.analysis import NgramTokenizer
+    measured = all_timings[keep_from:keep_to]
+    mean_ms = statistics.mean(measured)
+    std_ms = statistics.stdev(measured)
+    median_ms = statistics.median(measured)
 
-    tokenizer = NgramTokenizer(args.min_ngram, args.max_ngram)
-    big_text = generate_text(rng, 5000)
-
-    # Warm-up
-    list(tokenizer(big_text))
-
-    tokenizer_timings = []
-    for _ in range(args.runs):
-        start = time.perf_counter()
-        for text in texts[:500]:
-            _ = list(tokenizer(text))
-        end = time.perf_counter()
-        tokenizer_timings.append((end - start) * 1_000.0)
-
-    # --- Aggregate results ---
-    total_timings = [
-        idx + srch + tok
-        for idx, srch, tok in zip(indexing_timings, search_timings, tokenizer_timings)
-    ]
-
-    mean_ms = statistics.mean(total_timings)
-    std_ms = statistics.stdev(total_timings)
-
-    # --- Load baseline if available ---
     baseline_mean = None
     baseline_std = None
     baseline_runs = None
@@ -183,10 +184,10 @@ def main():
 
     if args.baseline and os.path.isfile(args.baseline):
         with open(args.baseline, encoding="utf-8") as fh:
-            bl = json.load(fh)
-        baseline_mean = bl.get("baseline", {}).get("mean_ms")
-        baseline_std = bl.get("baseline", {}).get("std_ms")
-        baseline_runs = bl.get("baseline", {}).get("runs")
+            baseline_data = json.load(fh)
+        baseline_mean = baseline_data.get("baseline", {}).get("mean_ms")
+        baseline_std = baseline_data.get("baseline", {}).get("std_ms")
+        baseline_runs = baseline_data.get("baseline", {}).get("runs")
 
         if baseline_mean and baseline_mean > 0:
             improvement_pct = ((baseline_mean - mean_ms) / baseline_mean) * 100.0
@@ -194,7 +195,7 @@ def main():
                 improvement_confirmed = mean_ms < (baseline_mean - baseline_std)
 
     result = {
-        "experiment": "ngrams",
+        "experiment": "ngrams-wildcard",
         "project": "whoosh-reloaded",
         "variant": "optimized",
         "baseline": {
@@ -205,30 +206,20 @@ def main():
         "optimized": {
             "mean_ms": round(mean_ms, 4),
             "std_ms": round(std_ms, 4),
-            "runs": args.runs,
+            "median_ms": round(median_ms, 4),
+            "runs": len(measured),
+            "total_runs": args.total_runs,
+            "discarded_warmup": args.discard,
+            "discarded_cooldown": args.discard,
         },
         "improvement_pct": round(improvement_pct, 2) if improvement_pct is not None else None,
         "improvement_confirmed": improvement_confirmed,
-        "details": {
-            "indexing": {
-                "mean_ms": round(statistics.mean(indexing_timings), 4),
-                "std_ms": round(statistics.stdev(indexing_timings), 4),
-            },
-            "searching": {
-                "mean_ms": round(statistics.mean(search_timings), 4),
-                "std_ms": round(statistics.stdev(search_timings), 4),
-            },
-            "tokenizer": {
-                "mean_ms": round(statistics.mean(tokenizer_timings), 4),
-                "std_ms": round(statistics.stdev(tokenizer_timings), 4),
-            },
-        },
         "config": {
             "docs": args.docs,
-            "doc_length": args.doc_length,
-            "queries": args.queries,
-            "min_ngram": args.min_ngram,
-            "max_ngram": args.max_ngram,
+            "vocab_size": args.vocab_size,
+            "wildcards_per_run": args.wildcards_per_run,
+            "patterns": patterns,
+            "pattern_match_counts": matches,
             "seed": args.seed,
         },
     }
@@ -240,14 +231,10 @@ def main():
     with open(args.output, "w", encoding="utf-8") as fh:
         json.dump(result, fh, indent=2)
 
-    print(f"experiment saved to: {args.output}")
-    print(f"  total:     mean={mean_ms:.2f} ms, std={std_ms:.2f} ms")
-    print(f"  indexing:  mean={statistics.mean(indexing_timings):.2f} ms")
-    print(f"  searching: mean={statistics.mean(search_timings):.2f} ms")
-    print(f"  tokenizer: mean={statistics.mean(tokenizer_timings):.2f} ms")
+    print(f"\nResults: mean={mean_ms:.2f} ms, std={std_ms:.2f} ms, median={median_ms:.2f} ms")
     if improvement_pct is not None:
-        print(f"  improvement: {improvement_pct:.2f}%")
-        print(f"  statistically confirmed: {improvement_confirmed}")
+        print(f"Improvement: {improvement_pct:.2f}% (confirmed={improvement_confirmed})")
+    print(f"Experiment saved to: {args.output}")
     return 0
 
 

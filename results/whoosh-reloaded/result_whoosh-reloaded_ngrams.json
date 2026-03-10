@@ -1,38 +1,39 @@
 {
-  "experiment": "ngrams",
+  "experiment": "ngrams-wildcard",
   "project": "whoosh-reloaded",
-  "variant": "baseline",
+  "variant": "optimized",
   "baseline": {
-    "mean_ms": 19421.2403,
-    "std_ms": 866.8902,
+    "mean_ms": 15171.0159,
+    "std_ms": 106.4586,
     "runs": 30
   },
   "optimized": {
-    "mean_ms": null,
-    "std_ms": null,
-    "runs": null
+    "mean_ms": 14480.158,
+    "std_ms": 120.3325,
+    "median_ms": 14497.1523,
+    "runs": 30,
+    "total_runs": 50,
+    "discarded_warmup": 10,
+    "discarded_cooldown": 10
   },
-  "improvement_pct": null,
-  "details": {
-    "indexing": {
-      "mean_ms": 19114.0277,
-      "std_ms": 867.335
-    },
-    "searching": {
-      "mean_ms": 238.5688,
-      "std_ms": 9.2889
-    },
-    "tokenizer": {
-      "mean_ms": 68.6438,
-      "std_ms": 6.0351
-    }
-  },
+  "improvement_pct": 4.55,
+  "improvement_confirmed": true,
   "config": {
-    "docs": 2000,
-    "doc_length": 200,
-    "queries": 100,
-    "min_ngram": 2,
-    "max_ngram": 4,
+    "docs": 30000,
+    "vocab_size": 5000,
+    "wildcards_per_run": 40,
+    "patterns": [
+      "*ados",
+      "*ritmo*",
+      "*logia",
+      "*graf*"
+    ],
+    "pattern_match_counts": {
+      "*ados": 1878,
+      "*ritmo*": 3072,
+      "*logia": 1878,
+      "*graf*": 3228
+    },
     "seed": 42
   }
 }
