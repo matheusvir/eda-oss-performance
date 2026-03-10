@@ -1,0 +1,42 @@
+{
+  "experiment": "btree-document-index",
+  "project": "tinydb",
+  "methodology": {
+    "total_runs": 50,
+    "discarded_warmup": 10,
+    "discarded_cooldown": 10,
+    "effective_runs": 30,
+    "lookups_per_run": 100,
+    "storage": "JSONStorage",
+    "operation": "search(Query().field == value)"
+  },
+  "scales": [
+    {
+      "num_docs": 1000,
+      "baseline_mean_ms": 126.3624,
+      "baseline_std_ms": 24.9947,
+      "optimized_mean_ms": 38.4087,
+      "optimized_std_ms": 1.6194,
+      "diff_abs_ms": 87.9537,
+      "improvement_pct": 69.6
+    },
+    {
+      "num_docs": 10000,
+      "baseline_mean_ms": 1453.8708,
+      "baseline_std_ms": 181.3362,
+      "optimized_mean_ms": 437.9524,
+      "optimized_std_ms": 8.2423,
+      "diff_abs_ms": 1015.9183,
+      "improvement_pct": 69.88
+    },
+    {
+      "num_docs": 50000,
+      "baseline_mean_ms": 5746.2734,
+      "baseline_std_ms": 331.0123,
+      "optimized_mean_ms": 2077.9511,
+      "optimized_std_ms": 120.1899,
+      "diff_abs_ms": 3668.3222,
+      "improvement_pct": 63.84
+    }
+  ]
+}
