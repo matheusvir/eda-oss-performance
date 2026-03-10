@@ -8,7 +8,6 @@ def generate_dotenv(num_vars: int) -> None:
     lines = [f"VAR_{i}=value_{i}" for i in range(num_vars)]
     with open(output_path, "w") as f:
         f.write("\n".join(lines) + "\n")
-    print(f"[sem_interpolacao] Generated {num_vars} variables → {output_path}")
 
 
 def generate_dotenv_interpolated(num_vars: int) -> None:
@@ -34,7 +33,7 @@ def generate_dotenv_interpolated(num_vars: int) -> None:
 RUNS = 30
 START = 10
 END = 25_000
-RATIO = (END / START) ** (1 / (RUNS - 1))  # ≈ 1.35
+RATIO = (END / START) ** (1 / (RUNS - 1))
 
 sizes = [round(START * RATIO**i) for i in range(RUNS - 1)] + [END]
 

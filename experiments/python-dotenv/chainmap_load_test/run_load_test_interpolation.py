@@ -42,10 +42,8 @@ def benchmark_file(filepath: str) -> dict:
 
     times = []
     for i in range(TOTAL_RUNS):
-        # Clean vars from previous iteration so DotEnv sees a fresh env
         clean_env(filepath)
 
-        # Disable GC to avoid interference during measurement
         gc.disable()
         start = time.perf_counter_ns()
         dotenv.load_dotenv(dotenv_path=filepath)
@@ -84,3 +82,5 @@ def main():
     output_path = os.path.join(os.path.dirname(__file__),"..","..","results","results-interpolated.json")
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
+
+main()
