@@ -1,0 +1,20 @@
+{
+  "experiment": "str-count-newline-advance",
+  "project": "python-dotenv",
+  "baseline": {
+    "mean_ms": 11403.397,
+    "std_ms": 1227.8494,
+    "runs": 39
+  },
+  "optimized": {
+    "mean_ms": 8528.5126,
+    "std_ms": 132.9689,
+    "runs": 32
+  },
+  "improvement_pct": 25.21,
+  "improvement_confirmed": true,
+  "config": {
+    "env_vars": 24999,
+    "warmup_runs": 5
+  }
+}
