@@ -1,0 +1,26 @@
+{
+  "experiment": "bloom-filter-negative-lookup",
+  "project": "whoosh-reloaded",
+  "variant": "optimized",
+  "baseline": {
+    "mean_ms": 28.3632,
+    "std_ms": 7.4932,
+    "runs": 30
+  },
+  "optimized": {
+    "mean_ms": 24.9802,
+    "std_ms": 5.1453,
+    "median_ms": 23.5981,
+    "runs": 30,
+    "total_runs": 50,
+    "discarded_warmup": 10,
+    "discarded_cooldown": 10
+  },
+  "improvement_pct": 11.93,
+  "improvement_confirmed": false,
+  "config": {
+    "docs": 500000,
+    "absent_queries_per_run": 1000,
+    "seed": 42
+  }
+}
