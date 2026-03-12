@@ -90,7 +90,7 @@ def plot_tinydb_bloom_filter() -> None:
     ax.set_xticklabels([f"{lbl} docs" for lbl in labels])
     ax.set_xlabel("Dataset size")
     ax.set_ylabel("Mean time per 100 negative lookups (ms, log scale)")
-    ax.set_title("TinyDB — Bloom Filter: Negative Lookup Performance\n(100 absent doc_id lookups per run, JSONStorage)")
+    ax.set_title("TinyDB: Bloom Filter")
     ax.legend()
     fig.tight_layout()
     save(fig, "tinydb", "tinydb_bloom_filter_comparison.png")
@@ -129,7 +129,7 @@ def plot_tinydb_btree() -> None:
     ax.set_xticklabels([f"{lbl} docs" for lbl in labels])
     ax.set_xlabel("Dataset size")
     ax.set_ylabel("Mean time per 100 equality queries (ms)")
-    ax.set_title("TinyDB — B-Tree Index: Equality Search Performance\n(100 search(Query().field == value) per run, JSONStorage)")
+    ax.set_title("TinyDB: B-Tree Index")
     ax.legend()
     fig.tight_layout()
     save(fig, "tinydb", "tinydb_btree_comparison.png")
@@ -178,8 +178,7 @@ def _plot_chainmap(json_path: str, title: str, out_name: str) -> None:
 def plot_chainmap_no_interp() -> None:
     _plot_chainmap(
         os.path.join(RESULTS_DIR, "python-dotenv", "result_no_interpolation_dotenv_chainmap.json"),
-        "python-dotenv — ChainMap: Load Performance (interpolation disabled)\n"
-        "dotenv_values() — 50 runs per scale, 30 scale points",
+        "python-dotenv: ChainMap (no interpolation)",
         "dotenv_chainmap_no_interpolation.png",
     )
 
@@ -190,8 +189,7 @@ def plot_chainmap_no_interp() -> None:
 def plot_chainmap_interp() -> None:
     _plot_chainmap(
         os.path.join(RESULTS_DIR, "python-dotenv", "result_interpolation_dotenv_chainmap.json"),
-        "python-dotenv — ChainMap: Load Performance (interpolation enabled)\n"
-        "dotenv_values() — 50 runs per scale, 30 scale points",
+        "python-dotenv: ChainMap (with interpolation)",
         "dotenv_chainmap_interpolation.png",
     )
 
@@ -217,9 +215,7 @@ def plot_str_count() -> None:
 
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{v:,.0f} ms"))
     ax.set_ylabel("Mean full-file parse time (ms)")
-    ax.set_title("python-dotenv — str.count: Parser Performance\n"
-                 f"(24,999 variables | baseline n={data['baseline']['runs']}, "
-                 f"optimized n={data['optimized']['runs']})")
+    ax.set_title("python-dotenv: str.count Parser")
     fig.tight_layout()
     save(fig, "python-dotenv", "dotenv_str_count_newline.png")
 
@@ -252,8 +248,7 @@ def _plot_whoosh_simple(json_path: str, title: str, ylabel: str, out_subdir: str
 
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{v:,.2f} ms"))
     ax.set_ylabel(ylabel)
-    note = "(* difference < baseline std dev — improvement objective but not confirmed by strict criterion)" if not confirmed else ""
-    ax.set_title(f"{title}\n(baseline n={b_runs}, optimized n={o_runs}){chr(10)+note if note else ''}", fontsize=9.5)
+    ax.set_title(title)
     fig.tight_layout()
     save(fig, out_subdir, out_name)
 
@@ -264,8 +259,7 @@ def _plot_whoosh_simple(json_path: str, title: str, ylabel: str, out_subdir: str
 def plot_whoosh_skip_lists() -> None:
     _plot_whoosh_simple(
         os.path.join(RESULTS_DIR, "whoosh-reloaded", "result_whoosh-reloaded_skip-lists.json"),
-        "whoosh-reloaded — Skip Lists: AND Intersection Performance\n"
-        "(500k docs, 100 AND query pairs per run)",
+        "Whoosh-Reloaded: Skip Lists",
         "Mean time per run (ms)",
         "whoosh-reloaded",
         "whoosh_skip_lists_comparison.png",
@@ -278,8 +272,7 @@ def plot_whoosh_skip_lists() -> None:
 def plot_whoosh_bloom_filter() -> None:
     _plot_whoosh_simple(
         os.path.join(RESULTS_DIR, "whoosh-reloaded", "result_whoosh-reloaded_bloom-filter.json"),
-        "whoosh-reloaded — Bloom Filter: Negative Term Lookup Performance\n"
-        "(500k docs, 1,000 absent-term queries per run)",
+        "Whoosh-Reloaded: Bloom Filter",
         "Mean time per 1,000 absent queries (ms)",
         "whoosh-reloaded",
         "whoosh_bloom_filter_comparison.png",
@@ -292,8 +285,7 @@ def plot_whoosh_bloom_filter() -> None:
 def plot_whoosh_ngrams() -> None:
     _plot_whoosh_simple(
         os.path.join(RESULTS_DIR, "whoosh-reloaded", "result_whoosh-reloaded_ngrams.json"),
-        "whoosh-reloaded — N-gram Index: Prefix-less Wildcard Performance\n"
-        "(30k docs, 40 wildcard queries per run: *ados, *ritmo*, *logia, *graf*)",
+        "Whoosh-Reloaded: N-Grams Index",
         "Mean time per run (ms)",
         "whoosh-reloaded",
         "whoosh_ngrams_comparison.png",
