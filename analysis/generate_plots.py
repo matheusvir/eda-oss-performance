@@ -2,7 +2,6 @@
 generate_plots.py
 
 Generates all benchmark comparison charts for the EDA OSS Performance project.
-All labels and titles are in English.
 
 Usage:
     python analysis/generate_plots.py
@@ -76,13 +75,15 @@ def plot_tinydb_bloom_filter() -> None:
     fig, ax = plt.subplots(figsize=(8, 5))
     bars_b = ax.bar(x - width / 2, baseline_means,  width, label="Baseline",  color=COLORS["baseline"],  alpha=ALPHA_BAR)
     bars_o = ax.bar(x + width / 2, optimized_means, width, label="Optimized", color=COLORS["optimized"], alpha=ALPHA_BAR)
-    ax.errorbar(x - width / 2, baseline_means,  yerr=baseline_stds,  color="#b91c1c", **ERROR_KWARGS)
-    ax.errorbar(x + width / 2, optimized_means, yerr=optimized_stds, color="#15803d", **ERROR_KWARGS)
+    # Add time values on top of baseline bars
+    for bar, val in zip(bars_b, baseline_means):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                f"{val:,.0f} ms", ha="center", va="bottom", fontsize=8)
 
-    # Improvement annotations above optimized bars
-    for bar, pct in zip(bars_o, improvements):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + max(baseline_stds) * 0.02,
-                f"−{pct:.1f}%", ha="center", va="bottom", fontsize=8, fontweight="bold", color="#15803d")
+    # Add time values on top of optimized bars
+    for bar, val, pct in zip(bars_o, optimized_means, improvements):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                f"{val:,.0f} ms\n(▼ {pct:.1f}%)", ha="center", va="bottom", fontsize=8, color="#15803d")
 
     ax.set_yscale("log")
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{v:,.0f} ms"))
@@ -117,12 +118,13 @@ def plot_tinydb_btree() -> None:
     fig, ax = plt.subplots(figsize=(8, 5))
     bars_b = ax.bar(x - width / 2, baseline_means,  width, label="Baseline",  color=COLORS["baseline"],  alpha=ALPHA_BAR)
     bars_o = ax.bar(x + width / 2, optimized_means, width, label="Optimized", color=COLORS["optimized"], alpha=ALPHA_BAR)
-    ax.errorbar(x - width / 2, baseline_means,  yerr=baseline_stds,  color="#b91c1c", **ERROR_KWARGS)
-    ax.errorbar(x + width / 2, optimized_means, yerr=optimized_stds, color="#15803d", **ERROR_KWARGS)
+    for bar, val in zip(bars_b, baseline_means):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                f"{val:,.0f} ms", ha="center", va="bottom", fontsize=8)
 
-    for bar, pct in zip(bars_o, improvements):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + max(baseline_stds) * 0.02,
-                f"−{pct:.1f}%", ha="center", va="bottom", fontsize=8, fontweight="bold", color="#15803d")
+    for bar, val, pct in zip(bars_o, optimized_means, improvements):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                f"{val:,.0f} ms\n(▼ {pct:.1f}%)", ha="center", va="bottom", fontsize=8, color="#15803d")
 
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{v:,.0f} ms"))
     ax.set_xticks(x)
@@ -178,7 +180,7 @@ def _plot_chainmap(json_path: str, title: str, out_name: str) -> None:
 def plot_chainmap_no_interp() -> None:
     _plot_chainmap(
         os.path.join(RESULTS_DIR, "python-dotenv", "result_no_interpolation_dotenv_chainmap.json"),
-        "python-dotenv: ChainMap (no interpolation)",
+        "Python-dotenv: ChainMap (no interpolation)",
         "dotenv_chainmap_no_interpolation.png",
     )
 
@@ -189,7 +191,7 @@ def plot_chainmap_no_interp() -> None:
 def plot_chainmap_interp() -> None:
     _plot_chainmap(
         os.path.join(RESULTS_DIR, "python-dotenv", "result_interpolation_dotenv_chainmap.json"),
-        "python-dotenv: ChainMap (with interpolation)",
+        "Python-dotenv: ChainMap (with interpolation)",
         "dotenv_chainmap_interpolation.png",
     )
 
@@ -208,14 +210,12 @@ def plot_str_count() -> None:
     fig, ax = plt.subplots(figsize=(6, 5))
     bars = ax.bar(["Baseline", "Optimized"], [b_mean, o_mean],
                   color=[COLORS["baseline"], COLORS["optimized"]], alpha=ALPHA_BAR, width=0.4)
-    ax.errorbar([0, 1], [b_mean, o_mean], yerr=[b_std, o_std],
-                color="black", **ERROR_KWARGS)
-    ax.text(1, o_mean + o_std + 100, f"−{improvement:.1f}%",
-            ha="center", va="bottom", fontsize=10, fontweight="bold", color="#15803d")
+    ax.text(0, b_mean, f"{b_mean:,.0f} ms", ha="center", va="bottom", fontsize=10)
+    ax.text(1, o_mean, f"{o_mean:,.0f} ms\n(▼ {improvement:.1f}%)", ha="center", va="bottom", fontsize=10, color="#15803d")
 
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{v:,.0f} ms"))
     ax.set_ylabel("Mean full-file parse time (ms)")
-    ax.set_title("python-dotenv: str.count Parser")
+    ax.set_title("Python-dotenv: str.count Parser")
     fig.tight_layout()
     save(fig, "python-dotenv", "dotenv_str_count_newline.png")
 
@@ -237,14 +237,10 @@ def _plot_whoosh_simple(json_path: str, title: str, ylabel: str, out_subdir: str
     fig, ax = plt.subplots(figsize=(6, 5))
     ax.bar(["Baseline", "Optimized"], [b_mean, o_mean],
            color=[COLORS["baseline"], COLORS["optimized"]], alpha=ALPHA_BAR, width=0.4)
-    ax.errorbar([0, 1], [b_mean, o_mean], yerr=[b_std, o_std],
-                color="black", **ERROR_KWARGS)
-
-    label = f"−{improvement:.2f}%"
-    label += " ✓" if confirmed else " *"
-    ax.text(1, o_mean + o_std * 0.3 + (b_mean - o_mean) * 0.05,
-            label, ha="center", va="bottom", fontsize=10, fontweight="bold",
-            color="#15803d" if confirmed else "#ca8a04")
+    ax.text(0, b_mean, f"{b_mean:,.2f} ms", ha="center", va="bottom", fontsize=10)
+    label = f"{o_mean:,.2f} ms\n(▼ {improvement:.1f}%"
+    label += " ✓)" if confirmed else " *)"
+    ax.text(1, o_mean, label, ha="center", va="bottom", fontsize=10, color="#15803d" if confirmed else "#ca8a04")
 
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{v:,.2f} ms"))
     ax.set_ylabel(ylabel)
