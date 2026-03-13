@@ -511,22 +511,17 @@ Todas as contribuições foram submetidas como Pull Requests para os repositóri
 
 **Filtro de Bloom**
 - [Wikipedia](https://en.wikipedia.org/wiki/Bloom_filter)
-- [GeeksForGeeks](https://www.geeksforgeeks.org/bloom-filters-introduction-and-python-implementation/)
 
 **B-Tree**
 - [Wikipedia](https://en.wikipedia.org/wiki/B-tree)
-- [GeeksForGeeks](https://www.geeksforgeeks.org/introduction-of-b-tree/)
 
 **Skip List**
 - [Wikipedia](https://en.wikipedia.org/wiki/Skip_list)
-- [GeeksForGeeks](https://www.geeksforgeeks.org/skip-list/)
 
 **N-gramas**
 - [Wikipedia](https://en.wikipedia.org/wiki/N-gram)
-- [GeeksForGeeks](https://www.geeksforgeeks.org/n-gram-language-modelling-with-nltk/)
 
 **ChainMap**
-- [Wikipedia](https://en.wikipedia.org/wiki/Associative_array#Multimap)
 - [Python Docs](https://docs.python.org/3/library/collections.html#collections.ChainMap)
 
 ---
