@@ -96,6 +96,10 @@ Os scripts de benchmark seguem a nomenclatura `baseline_<projeto>_<feature>.py` 
 
 Cada otimização passa pela suíte de testes existente do projeto. Quando a cobertura existente não era suficiente, novos arquivos de teste foram adicionados. O framework utilizado é **pytest**, com classes de testes agrupadas por funcionalidade.
 
+### Versionamento de código
+
+O projeto utiliza **Git** para versionamento e **GitHub** como plataforma de hospedagem. Cada otimização foi desenvolvida em um branch dedicado e integrada ao branch principal do fork via Pull Request, permitindo rastrear o histórico de alterações de forma isolada. Os commits seguem o padrão [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, `perf`, `test`, `docs`). Os três projetos-alvo foram incluídos como submódulos Git, mantendo o repositório de pesquisa desacoplado dos forks.
+
 ---
 
 ## Gestão do Projeto
@@ -126,7 +130,6 @@ As tarefas foram gerenciadas por meio do **GitHub Projects** em [github.com/user
 ├── tinydb/                 Submódulo — fork: matheusvir/tinydb
 ├── python-dotenv/          Submódulo — fork: matheusvir/python-dotenv
 ├── whoosh-reloaded/        Submódulo — fork: matheusvir/whoosh-reloaded
-├── pulls.md                Links para os 7 PRs abertos nos repositórios upstream
 └── contribution.md         Guia de contribuição do projeto
 ```
 
