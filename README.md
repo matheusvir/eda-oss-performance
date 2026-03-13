@@ -99,13 +99,13 @@ Cada otimização passa pela suíte de testes existente do projeto. Quando a cob
 
 ### Versionamento de código
 
-O projeto utiliza **Git** para versionamento e **GitHub** como plataforma de hospedagem. Cada otimização foi desenvolvida em um branch dedicado e integrada ao branch principal do fork via Pull Request, permitindo rastrear o histórico de alterações de forma isolada. Os commits seguem o padrão [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, `perf`, `test`, `docs`). Os três projetos-alvo foram incluídos como submódulos Git, mantendo o repositório de pesquisa desacoplado dos forks.
+O projeto utiliza **Git** para versionamento e **GitHub** como plataforma de hospedagem. Cada otimização foi desenvolvida em um branch dedicado e integrada ao branch principal do fork via Pull Request, permitindo rastrear o histórico de alterações de forma isolada. Os commits seguem o padrão [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, `perf`, `test`, `docs`). Os três projetos-alvo foram incluídos como submódulos Git, mantendo o repositório de pesquisa desacoplado dos forks. Todo o fluxo de trabalho coletivo — desde a nomenclatura de branches até a formatação do código e revisão de PRs — foi rigidamente guiado pelo arquivo [`contribution.md`](contribution.md), garantindo consistência no desenvolvimento entre os membros da equipe.
 
 ---
 
 ## Gestão do Projeto
 
-As tarefas foram gerenciadas por meio do **GitHub Projects** em [github.com/users/matheusvir/projects/2/views/1](https://github.com/users/matheusvir/projects/2/views/1), complementado por issues criadas neste repositório principal para rastreamento individual das atividades. Esse fluxo permitiu distribuir responsabilidades entre os integrantes e acompanhar o progresso de cada otimização de forma transparente.
+As tarefas foram gerenciadas por meio do **GitHub Projects** em [EDA OSS Performance](https://github.com/users/matheusvir/projects/2/views/1), complementado por issues criadas neste repositório principal para rastreamento individual das atividades. Esse fluxo permitiu distribuir responsabilidades entre os integrantes e acompanhar o progresso de cada otimização de forma transparente.
 
 ---
 
@@ -170,7 +170,7 @@ Onde *n* é o número de documentos e *k* é o número de funções de hash (tip
 
 ![Bloom Filter TinyDB](https://raw.githubusercontent.com/matheusvir/eda-oss-performance/main/analysis/plots/tinydb/tinydb_bloom_filter_comparison.png)
 
-O ganho escala de forma dramática com o tamanho do dataset, que é o comportamento esperado para um Filtro de Bloom. Em 50k documentos, o baseline leva ~12,5 segundos por lote de 100 consultas; o caminho otimizado leva ~1,3 ms — uma redução de aproximadamente 9.700×.
+O ganho escala de forma notável com o tamanho do dataset, que é o comportamento esperado para um Filtro de Bloom. Em 50k documentos, o baseline leva ~12,5 segundos por lote de 100 consultas; o caminho otimizado leva ~1,3 ms — uma redução de aproximadamente 9.700×.
 
 #### Testes
 
@@ -442,7 +442,7 @@ Introduz um Filtro de Bloom em memória para otimizar consultas por `doc_id` em 
 
 #### [PR #611 — Índice B-Tree para busca por igualdade](https://github.com/msiemens/tinydb/pull/611)
 
-Introduce um índice B-Tree opcional em memória que reduz a complexidade de `search()` de O(n) para O(log n) em campos indexados. O índice é criado sob demanda via `create_index(field_name)` e não altera o comportamento padrão da biblioteca. A melhoria é consistente, variando entre 63% e 70% nas escalas testadas.
+Introduz um índice B-Tree opcional em memória que reduz a complexidade de `search()` de O(n) para O(log n) em campos indexados. O índice é criado sob demanda via `create_index(field_name)` e não altera o comportamento padrão da biblioteca. A melhoria é consistente, variando entre 63% e 70% nas escalas testadas.
 
 ---
 
