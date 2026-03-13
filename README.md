@@ -126,7 +126,6 @@ As tarefas foram gerenciadas por meio do **GitHub Projects** em [github.com/user
 │   └── whoosh-reloaded/
 ├── analysis/
 │   └── plots/              Gráficos comparativos (PNG)
-├── prototips/              Rascunhos dos PR bodies para os repositórios upstream
 ├── tinydb/                 Submódulo — fork: matheusvir/tinydb
 ├── python-dotenv/          Submódulo — fork: matheusvir/python-dotenv
 ├── whoosh-reloaded/        Submódulo — fork: matheusvir/whoosh-reloaded
