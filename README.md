@@ -509,20 +509,15 @@ Todas as contribuições foram submetidas como Pull Requests para os repositóri
 
 ## Referências
 
-**Filtro de Bloom**
-- [Wikipedia](https://en.wikipedia.org/wiki/Bloom_filter)
+- **Filtro de Bloom:** [Wikipedia](https://en.wikipedia.org/wiki/Bloom_filter)
 
-**B-Tree**
-- [Wikipedia](https://en.wikipedia.org/wiki/B-tree)
+- **B-Tree:** [Wikipedia](https://en.wikipedia.org/wiki/B-tree)
 
-**Skip List**
-- [Wikipedia](https://en.wikipedia.org/wiki/Skip_list)
+- **Skip List:** [Wikipedia](https://en.wikipedia.org/wiki/Skip_list)
 
-**N-gramas**
-- [Wikipedia](https://en.wikipedia.org/wiki/N-gram)
+- **N-gramas:** [Wikipedia](https://en.wikipedia.org/wiki/N-gram)
 
-**ChainMap**
-- [Python Docs](https://docs.python.org/3/library/collections.html#collections.ChainMap)
+- **ChainMap:** [Python Docs](https://docs.python.org/3/library/collections.html#collections.ChainMap)
 
 ---
 
