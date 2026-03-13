@@ -1,8 +1,5 @@
 # Otimização de projetos open source usando estruturas de dados e algoritmos na linguagem python
 
-**Disciplina:** Estruturas de Dados e Algoritmos — 2025.2  
-**Universidade:** Universidade Federal de Campina Grande (UFCG)
-
 Projeto acadêmico com objetivo de identificar, implementar e mensurar otimizações de performance em bibliotecas Python open source amplamente utilizadas. As contribuições foram submetidas como Pull Requests para os repositórios oficiais de cada projeto.
 
 ---
@@ -495,8 +492,16 @@ Adiciona `SkipListMatcher`, que herda de `ListMatcher` e sobrescreve apenas `ski
 
 ## Conclusão
 
-As sete otimizações implementadas demonstram que bibliotecas Python amplamente utilizadas apresentam gargalos de performance identificáveis e corrigíveis com aplicação direta de estruturas de dados clássicas. Os ganhos mais expressivos ocorreram no TinyDB, onde a combinação de Filtros de Bloom e B-Trees reduziu operações que cresciam linearmente com o volume de dados para complexidade constante e logarítmica, respectivamente — chegando a reduções de até 99,99% no tempo de consultas negativas.
+As sete otimizações implementadas demonstram que bibliotecas Python amplamente utilizadas apresentam gargalos de performance identificáveis e corrigíveis com aplicação direta de estruturas de dados. 
 
-No python-dotenv, substituições cirúrgicas (ChainMap e `str.count`) eliminaram alocações desnecessárias em hot paths, gerando melhorias de 25% a 76% sem nenhuma mudança de API. No whoosh-reloaded, os ganhos foram mais modestos — refletindo que o motor já possui otimizações internas — mas ainda observáveis em todas as três frentes: Skip Lists reduziram a variância das consultas AND, o Filtro de Bloom antecipou lookups negativos antes do acesso a disco, e o índice de N-gramas eliminou a varredura linear do léxico em buscas wildcard sem prefixo.
+Os ganhos mais expressivos ocorreram no TinyDB, onde Filtros de Bloom e B-Trees reduziram operações que cresciam linearmente com o volume de dados para complexidade constante e logarítmica, respectivamente — chegando a reduções de até 99,99% no tempo de consultas negativas.
+
+No python-dotenv, substituições cirúrgicas (ChainMap e `str.count`) eliminaram alocações desnecessárias em hot paths, gerando melhorias de 25% a 76% sem nenhuma mudança de API. 
+
+No whoosh-reloaded, os ganhos foram mais modestos,refletindo que o motor já possui otimizações internas, mas observáveis em todas as três frentes: Skip Lists reduziram a variância das consultas AND, o Filtro de Bloom antecipou lookups negativos antes do acesso a disco, e o índice de N-gramas eliminou a varredura linear do léxico em buscas wildcard sem prefixo.
 
 Todas as contribuições foram submetidas como Pull Requests para os repositórios oficiais, acompanhadas de benchmarks reproduzíveis via Docker e de suítes de testes sem regressões.
+
+---
+
+*Este repositório é parte do projeto acadêmico da disciplina de Estruturas de Dados e Algoritmos do curso de Ciência da Computação, período 2025.2, da Universidade Federal de Campina Grande (UFCG).*
