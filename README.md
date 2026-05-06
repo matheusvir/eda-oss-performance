@@ -33,11 +33,12 @@ Projeto acadêmico com objetivo de identificar, implementar e mensurar otimizaç
 | Integrante | GitHub |
 |---|---|
 | Matheus Virgolino | [@matheusvir](https://github.com/matheusvir) |
+| João Pereira | [@jpereira-Dev](https://github.com/jpereira-Dev) |
 | Lucas Gabriel | [@Lucaslg7](https://github.com/Lucaslg7) |
 | Manoel Netto | [@ManoelNetto26](https://github.com/ManoelNetto26) |
 | Pedro Almeida | [@Predd0o](https://github.com/Predd0o) |
 | Railton Dantas | [@RailtonDantas](https://github.com/RailtonDantas) |
-| João Pereira | [@jpereira-Dev](https://github.com/jpereira-Dev) |
+
 
 ---
 
